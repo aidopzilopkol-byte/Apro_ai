@@ -39,7 +39,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); heig
 /* Левая панель */
 .sidebar-left { width: 260px; background: var(--panel); border-right: 1px solid var(--line); display: flex; flex-direction: column; padding: 20px; flex-shrink: 0; }
 .brand { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 800; margin-bottom: 30px; }
-.brand-logo { width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: grid; place-items: center; font-style: italic; font-weight: 900; }
+.brand-logo { width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: grid; place-items: center; font-style: italic; font-weight: 900; color: #080b12; }
 .badge-ultra { background: rgba(139, 92, 246, 0.2); color: #a78bfa; font-size: 11px; padding: 4px 8px; border-radius: 12px; font-weight: bold; border: 1px solid rgba(139,92,246,0.3); }
 
 .nav-menu { display: flex; flex-direction: column; gap: 8px; flex: 1; }
@@ -59,26 +59,31 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); heig
 .user-info .status { font-size: 12px; color: var(--muted); }
 .logout-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 18px; }
 
-/* Центральная часть */
+/* Центральная часть (Чат) */
 .main-area { flex: 1; display: flex; flex-direction: column; position: relative; background: radial-gradient(circle at 50% 10%, #0d1527 0%, var(--bg) 60%); }
 .top-bar { display: flex; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid var(--line); }
 .btn-new-chat { background: var(--panel2); border: 1px solid var(--line); color: var(--text); padding: 8px 16px; border-radius: 20px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
 .top-controls { display: flex; gap: 16px; align-items: center; color: var(--muted); }
-.lang-select { background: none; border: none; color: var(--muted); font-size: 14px; cursor: pointer; }
 
 /* Экран приветствия */
 .welcome-screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
 .welcome-logo { font-size: 48px; font-weight: 900; display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
 .welcome-logo span { background: linear-gradient(135deg, #60a5fa, #c084fc); -webkit-background-clip: text; color: transparent; }
-.welcome-sub { color: var(--muted); font-size: 18px; margin-bottom: 40px; }
+.welcome-sub { color: var(--muted); font-size: 18px; }
+
+/* Сообщения */
+#chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; scroll-behavior: smooth; }
+.msg { max-width: 85%; padding: 14px 18px; border-radius: 18px; line-height: 1.5; white-space: pre-wrap; font-size: 15px; }
+.msg.user { align-self: flex-end; background: linear-gradient(135deg, #155a88, #17456a); border-bottom-right-radius: 4px; }
+.msg.assistant { align-self: flex-start; background: var(--panel); border: 1px solid var(--line); border-bottom-left-radius: 4px; }
+.typing { color: var(--muted); font-style: italic; align-self: flex-start; padding: 10px; }
 
 /* Поле ввода */
-.composer-wrap { width: 100%; max-width: 700px; position: relative; }
-.composer { display: flex; align-items: center; background: var(--panel2); border: 1px solid var(--line); border-radius: 24px; padding: 8px 16px; }
-.composer textarea { flex: 1; background: transparent; border: none; color: var(--text); font-size: 16px; resize: none; outline: none; padding: 12px 0; max-height: 120px; font-family: inherit; }
-.composer-actions { display: flex; gap: 12px; align-items: center; color: var(--muted); }
-.icon-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 20px; display: grid; place-items: center; }
-.send-btn { background: var(--blue); color: white; border: none; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; }
+.composer-wrap { width: 100%; max-width: 800px; margin: 0 auto; padding: 10px 20px 20px; }
+.composer { display: flex; align-items: flex-end; background: var(--panel2); border: 1px solid var(--line); border-radius: 24px; padding: 8px 16px; }
+.composer textarea { flex: 1; background: transparent; border: none; color: var(--text); font-size: 16px; resize: none; outline: none; padding: 12px 0; max-height: 150px; font-family: inherit; }
+.send-btn { background: var(--blue); color: white; border: none; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; margin-bottom: 5px; }
+.send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* Правая панель */
 .sidebar-right { width: 380px; background: var(--panel); border-left: 1px solid var(--line); padding: 24px; overflow-y: auto; flex-shrink: 0; }
@@ -113,11 +118,9 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); heig
   .mobile-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--panel); z-index: 50; }
   .main-area { height: calc(100dvh - 60px); }
   .top-bar { display: none; }
-  .welcome-screen { justify-content: flex-start; padding-top: 60px; }
+  .welcome-screen { justify-content: center; }
   .welcome-logo { font-size: 32px; }
-  .welcome-sub { font-size: 14px; }
-  .composer-wrap { position: fixed; bottom: 70px; left: 0; right: 0; padding: 0 16px; max-width: 100%; }
-  .composer { border-radius: 16px; }
+  .composer-wrap { position: fixed; bottom: 60px; left: 0; right: 0; padding: 10px 16px; background: linear-gradient(transparent, var(--bg) 30%); }
   .mobile-bottom-nav { display: flex; justify-content: space-around; align-items: center; position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: var(--panel); border-top: 1px solid var(--line); z-index: 50; padding-bottom: env(safe-area-inset-bottom); }
   .mobile-nav-btn { background: none; border: none; color: var(--muted); font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
   .mobile-nav-btn.active { color: var(--blue); }
@@ -125,6 +128,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); heig
   .mobile-pricing-modal { display: block; position: fixed; bottom: -100%; left: 0; right: 0; height: 85dvh; background: var(--panel); border-top: 1px solid var(--line); border-radius: 24px 24px 0 0; z-index: 100; transition: bottom 0.3s ease; padding: 24px 16px; overflow-y: auto; }
   .mobile-pricing-modal.open { bottom: 0; }
   .modal-close { position: absolute; top: 16px; right: 16px; background: var(--panel2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; }
+  #chat-container { padding-bottom: 90px; }
 }
 svg { fill: currentColor; }
 </style>
@@ -134,9 +138,9 @@ svg { fill: currentColor; }
 <!-- ЭКРАН РЕГИСТРАЦИИ -->
 <div id="login-screen">
   <div class="login-box">
-    <div class="brand-logo">A</div>
+    <div class="brand-logo" style="font-size:30px; color:white;">A</div>
     <h2>Добро пожаловать в Apro_ai</h2>
-    <p>Войдите, чтобы получить доступ к ИИ-помощнику и вашей подписке.</p>
+    <p>Войдите, чтобы получить доступ к ИИ-помощнику.</p>
     <button class="google-btn" id="google-login-btn">
       <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G">
       Войти через Google
@@ -148,12 +152,13 @@ svg { fill: currentColor; }
 <div id="app-container">
   <div class="overlay" id="overlay" onclick="togglePricing()"></div>
   <div class="app">
+    
     <!-- Левая панель -->
     <aside class="sidebar-left">
       <div class="brand"><div class="brand-logo">A</div>Apro_ai <span class="badge-ultra">Ultra</span></div>
       <nav class="nav-menu">
         <a class="nav-item active">💬 Чат</a><a class="nav-item">🔍 Поиск</a><a class="nav-item">🖼️ Изображения</a>
-        <a class="nav-item">✨ Генерация</a><a class="nav-item">💻 Код</a><a class="nav-item">📁 Файлы</a><a class="nav-item">⏱️ История</a>
+        <a class="nav-item">✨ Генерация</a><a class="nav-item">💻 Код</a><a class="nav-item">📁 Файлы</a>
       </nav>
       <div class="subscription-card" onclick="togglePricing()">
         <h4>👑 Apro_ai Ultra <span style="font-size:10px; background:#4c1d95; padding:2px 6px; border-radius:8px;">Активен</span></h4>
@@ -170,34 +175,41 @@ svg { fill: currentColor; }
       </div>
     </aside>
 
-    <!-- Центральная часть -->
+    <!-- Центральная часть (ЧАТ) -->
     <main class="main-area">
       <header class="mobile-header">
         <div class="brand"><div class="brand-logo">A</div>Apro_ai</div>
         <button class="icon-btn" onclick="togglePricing()">👑</button>
       </header>
       <div class="top-bar">
-        <button class="btn-new-chat">+ Новый чат</button>
-        <div class="top-controls"><button class="lang-select">🌐 RU ⌄</button><button class="icon-btn">☀️</button><button class="icon-btn">☰</button></div>
+        <button class="btn-new-chat" onclick="clearChat()">+ Новый чат</button>
+        <div class="top-controls"><button class="lang-select">🌐 RU</button></div>
       </div>
-      <div class="welcome-screen">
+      
+      <!-- Приветствие (скрывается при чате) -->
+      <div class="welcome-screen" id="welcome-screen">
         <div class="welcome-logo"><div class="brand-logo" style="width:50px; height:50px; font-size:30px;">A</div><span>Apro_ai</span></div>
         <p class="welcome-sub">Задавай любые вопросы. Я всегда рядом.</p>
       </div>
+
+      <!-- Контейнер для сообщений -->
+      <div id="chat-container"></div>
+
+      <!-- Поле ввода -->
       <div class="composer-wrap">
         <div class="composer">
-          <textarea rows="1" placeholder="Напиши сообщение Apro_ai..."></textarea>
-          <div class="composer-actions"><button class="icon-btn">📎</button><button class="icon-btn">🖼️</button><button class="send-btn">➤</button></div>
+          <textarea id="prompt" rows="1" placeholder="Напиши сообщение Apro_ai..."></textarea>
+          <button class="send-btn" id="send-btn">➤</button>
         </div>
       </div>
     </main>
 
-    <!-- Правая панель -->
+    <!-- Правая панель (Тарифы) -->
     <aside class="sidebar-right">
       <div class="pricing-header"><h2>👑 Подписка Apro_ai</h2><p>Выбери уровень, который подходит именно тебе.</p></div>
-      <div class="plan-card premium"><div class="plan-title"><h3>👑 Premium</h3><div class="plan-price">199 ₽<span>/мес</span></div></div><ul class="plan-features"><li>Лимиты запросов</li><li>Доступ к GPT-4o</li><li>10 фото в день</li><li>Файлы до 50 МБ</li></ul><button class="btn-plan">Выбрать Premium</button></div>
-      <div class="plan-card super"><div class="plan-title"><h3>👑 Super</h3><div class="plan-price">399 ₽<span>/мес</span></div></div><ul class="plan-features"><li>Всё из Premium</li><li>50 фото в день</li><li>Файлы до 200 МБ</li><li>Мощные модели</li></ul><button class="btn-plan">Выбрать Super</button></div>
-      <div class="plan-card ultra"><div class="plan-title"><h3>👑 Ultra</h3><div class="plan-price">799 ₽<span>/мес</span></div></div><ul class="plan-features"><li>Всё из Super</li><li>Безлимит фото</li><li>Файлы до 1 ГБ</li><li>Ранний доступ</li></ul><button class="btn-plan">Выбрать Ultra</button></div>
+      <div class="plan-card premium"><div class="plan-title"><h3>👑 Premium</h3><div class="plan-price">199 ₽<span>/мес</span></div></div><ul class="plan-features"><li>Лимиты запросов</li><li>Доступ к GPT-4</li><li>10 фото в день</li></ul><button class="btn-plan">Выбрать Premium</button></div>
+      <div class="plan-card super"><div class="plan-title"><h3>👑 Super</h3><div class="plan-price">399 ₽<span>/мес</span></div></div><ul class="plan-features"><li>Всё из Premium</li><li>50 фото в день</li><li>Мощные модели</li></ul><button class="btn-plan">Выбрать Super</button></div>
+      <div class="plan-card ultra"><div class="plan-title"><h3>👑 Ultra</h3><div class="plan-price">799 ₽<span>/мес</span></div></div><ul class="plan-features"><li>Всё из Super</li><li>Безлимит фото</li><li>Ранний доступ</li></ul><button class="btn-plan">Выбрать Ultra</button></div>
     </aside>
   </div>
 
@@ -218,12 +230,11 @@ svg { fill: currentColor; }
   </div>
 </div>
 
-<!-- ПОДКЛЮЧЕНИЕ FIREBASE (С ТВОИМИ КЛЮЧАМИ) -->
+<!-- FIREBASE AUTH -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-  // Твои личные ключи из Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyCZIXNiu3_C2PEQsyQWpjUWU36sgc7TXQ0",
     authDomain: "apro-ai-2349a.firebaseapp.com",
@@ -233,38 +244,29 @@ svg { fill: currentColor; }
     appId: "1:588825111599:web:3622e62289bfec6010aada"
   };
 
-  // Инициализация Firebase
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
-  // Элементы интерфейса
   const loginScreen = document.getElementById('login-screen');
   const appContainer = document.getElementById('app-container');
   const loginBtn = document.getElementById('google-login-btn');
   const logoutBtn = document.getElementById('logout-btn');
   const mobileLogoutBtn = document.getElementById('mobile-logout');
 
-  // Функция входа
   loginBtn.addEventListener('click', () => {
-    signInWithPopup(auth, provider).catch((error) => {
-      alert("Ошибка входа: " + error.message);
-    });
+    signInWithPopup(auth, provider).catch((error) => alert("Ошибка: " + error.message));
   });
 
-  // Функция выхода
   const handleLogout = () => signOut(auth);
   logoutBtn.addEventListener('click', handleLogout);
   mobileLogoutBtn.addEventListener('click', handleLogout);
 
-  // Следим за состоянием (вошел / не вошел)
   onAuthStateChanged(auth, (user) => {
     if (user) {
       loginScreen.style.display = 'none';
       appContainer.style.display = 'block';
-      
       document.getElementById('user-name').textContent = user.displayName || "Пользователь";
-      
       if (user.photoURL) {
         const avatarImg = document.getElementById('user-avatar');
         avatarImg.src = user.photoURL;
@@ -278,26 +280,75 @@ svg { fill: currentColor; }
   });
 </script>
 
-<!-- ЛОГИКА ИНТЕРФЕЙСА -->
+<!-- ЛОГИКА ЧАТА И НАСТОЯЩИЙ ИИ -->
 <script>
-  function togglePricing() {
-    const modal = document.getElementById('mobilePricing');
-    const overlay = document.getElementById('overlay');
-    if (modal.classList.contains('open')) {
-      modal.classList.remove('open');
-      overlay.style.display = 'none';
-    } else {
-      modal.classList.add('open');
-      overlay.style.display = 'block';
+  const chatContainer = document.getElementById('chat-container');
+  const promptInput = document.getElementById('prompt');
+  const sendBtn = document.getElementById('send-btn');
+  const welcomeScreen = document.getElementById('welcome-screen');
+
+  // Авто-увеличение текстового поля
+  promptInput.addEventListener('input', function() {
+    this.style.height = "auto";
+    this.style.height = (this.scrollHeight) + "px";
+  });
+
+  // Отправка по Enter
+  promptInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
     }
+  });
+
+  sendBtn.addEventListener('click', sendMessage);
+
+  // Очистка чата
+  function clearChat() {
+    chatContainer.innerHTML = '';
+    welcomeScreen.style.display = 'flex';
   }
-  const tx = document.querySelector('textarea');
-  if(tx) {
-    tx.addEventListener("input", function() {
-      this.style.height = "auto";
-      this.style.height = (this.scrollHeight) + "px";
-    });
+
+  // Добавление сообщения в UI
+  function appendMessage(role, text) {
+    welcomeScreen.style.display = 'none';
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `msg ${role}`;
+    msgDiv.textContent = text;
+    chatContainer.appendChild(msgDiv);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    return msgDiv;
   }
-</script>
-</body>
-</html>
+
+  // Главная функция общения с ИИ
+  async function sendMessage() {
+    const text = promptInput.value.trim();
+    if (!text) return;
+
+    // 1. Показываем сообщение пользователя
+    appendMessage('user', text);
+    promptInput.value = '';
+    promptInput.style.height = 'auto';
+    sendBtn.disabled = true;
+
+    // 2. Показываем "Печатает..."
+    const typingMsg = appendMessage('assistant', 'Apro_ai печатает...');
+    typingMsg.classList.add('typing');
+
+    try {
+      // 3. Отправляем запрос к бесплатному ИИ (Pollinations)
+      const response = await fetch('https://text.pollinations.ai/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [
+            { role: 'system', content: 'Ты Apro_ai, умный и дружелюбный ИИ-помощник. Отвечай кратко, по делу и на русском языке.' },
+            { role: 'user', content: text }
+          ],
+          model: 'openai' // Используется модель GPT-4o
+        })
+      });
+
+      const reply = await response.text();
+      
+      // 4
