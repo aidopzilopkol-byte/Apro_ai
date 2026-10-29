@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080b12">
+<title>Apro_ai — ИИ-помощник</title>
+<style>
+:root {
+  --bg: #06070a; --panel: #0d111a; --panel2: #131927; --line: #1f293d;
+  --text: #ffffff; --muted: #8b9bb4; --blue: #3b82f6; --purple: #8b5cf6;
+  --font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); height: 100dvh; overflow: hidden; display: flex; }
+
+/* ================= ЭКРАН ВХОДА ================= */
+#login-screen {
+  position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; z-index: 9999;
+  background: radial-gradient(circle at 50% 20%, #0d1527 0%, var(--bg) 70%);
+}
+.login-box { background: var(--panel); padding: 40px 30px; border-radius: 24px; border: 1px solid var(--line); text-align: center; max-width: 400px; width: 90%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+.login-box .brand-logo { width: 60px; height: 60px; font-size: 36px; margin: 0 auto 20px; }
+.login-box h2 { font-size: 24px; margin-bottom: 10px; }
+.login-box p { color: var(--muted); font-size: 14px; margin-bottom: 30px; }
+.google-btn {
+  background: white; color: #333; border: none; padding: 14px; border-radius: 12px;
+  width: 100%; font-size: 16px; font-weight: 600; display: flex; align-items: center;
+  justify-content: center; gap: 10px; cursor: pointer; transition: 0.2s;
+}
+.google-btn:hover { background: #f0f0f0; }
+.google-btn img { width: 20px; height: 20px; }
+
+/* ================= ОСНОВНОЙ ИНТЕРФЕЙС ================= */
+#app-container { display: none; width: 100%; height: 100%; }
+.app { display: flex; width: 100%; height: 100%; }
+
+/* Левая панель */
+.sidebar-left { width: 260px; background: var(--panel); border-right: 1px solid var(--line); display: flex; flex-direction: column; padding: 20px; flex-shrink: 0; }
+.brand { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 800; margin-bottom: 30px; }
+.brand-logo { width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: grid; place-items: center; font-style: italic; font-weight: 900; }
+.badge-ultra { background: rgba(139, 92, 246, 0.2); color: #a78bfa; font-size: 11px; padding: 4px 8px; border-radius: 12px; font-weight: bold; border: 1px solid rgba(139,92,246,0.3); }
+
+.nav-menu { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: var(--muted); text-decoration: none; font-size: 15px; cursor: pointer; transition: 0.2s; }
+.nav-item:hover, .nav-item.active { background: var(--panel2); color: var(--text); }
+.nav-item.active { background: #1e3a8a33; color: #60a5fa; border: 1px solid #3b82f633; }
+
+.subscription-card { background: var(--panel2); border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin-bottom: 20px; cursor: pointer; }
+.subscription-card h4 { font-size: 15px; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.subscription-card p { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+.subscription-card a { font-size: 12px; color: #60a5fa; text-decoration: none; }
+
+.user-profile { display: flex; align-items: center; gap: 12px; padding-top: 16px; border-top: 1px solid var(--line); }
+.avatar { width: 36px; height: 36px; background: #2a3441; border-radius: 50%; display: grid; place-items: center; object-fit: cover; }
+.user-info { flex: 1; }
+.user-info .name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+.user-info .status { font-size: 12px; color: var(--muted); }
+.logout-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 18px; }
+
+/* Центральная часть */
+.main-area { flex: 1; display: flex; flex-direction: column; position: relative; background: radial-gradient(circle at 50% 10%, #0d1527 0%, var(--bg) 60%); }
+.top-bar { display: flex; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid var(--line); }
+.btn-new-chat { background: var(--panel2); border: 1px solid var(--line); color: var(--text); padding: 8px 16px; border-radius: 20px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+.top-controls { display: flex; gap: 16px; align-items: center; color: var(--muted); }
+.lang-select { background: none; border: none; color: var(--muted); font-size: 14px; cursor: pointer; }
+
+/* Экран приветствия */
+.welcome-screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
+.welcome-logo { font-size: 48px; font-weight: 900; display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.welcome-logo span { background: linear-gradient(135deg, #60a5fa, #c084fc); -webkit-background-clip: text; color: transparent; }
+.welcome-sub { color: var(--muted); font-size: 18px; margin-bottom: 40px; }
+
+/* Поле ввода */
+.composer-wrap { width: 100%; max-width: 700px; position: relative; }
+.composer { display: flex; align-items: center; background: var(--panel2); border: 1px solid var(--line); border-radius: 24px; padding: 8px 16px; }
+.composer textarea { flex: 1; background: transparent; border: none; color: var(--text); font-size: 16px; resize: none; outline: none; padding: 12px 0; max-height: 120px; font-family: inherit; }
+.composer-actions { display: flex; gap: 12px; align-items: center; color: var(--muted); }
+.icon-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 20px; display: grid; place-items: center; }
+.send-btn { background: var(--blue); color: white; border: none; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; }
+
+/* Правая панель */
+.sidebar-right { width: 380px; background: var(--panel); border-left: 1px solid var(--line); padding: 24px; overflow-y: auto; flex-shrink: 0; }
+.pricing-header { margin-bottom: 24px; }
+.pricing-header h2 { font-size: 20px; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.pricing-header p { font-size: 13px; color: var(--muted); }
+.plan-card { border: 1px solid var(--line); border-radius: 16px; padding: 20px; margin-bottom: 16px; position: relative; background: var(--panel2); transition: 0.3s; }
+.plan-card.premium { border-color: #3b82f6; box-shadow: 0 0 20px rgba(59,130,246,0.1); }
+.plan-card.super { border-color: #10b981; box-shadow: 0 0 20px rgba(16,185,129,0.1); }
+.plan-card.ultra { border-color: #8b5cf6; box-shadow: 0 0 20px rgba(139,92,246,0.1); }
+.plan-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.plan-title h3 { font-size: 16px; display: flex; align-items: center; gap: 8px; }
+.plan-price { font-size: 16px; font-weight: bold; }
+.plan-price span { font-size: 12px; color: var(--muted); font-weight: normal; }
+.plan-features { list-style: none; margin-bottom: 20px; font-size: 13px; color: var(--muted); }
+.plan-features li { margin-bottom: 8px; display: flex; gap: 8px; align-items: flex-start; }
+.plan-features li::before { content: '✓'; color: #60a5fa; }
+.plan-card.super .plan-features li::before { color: #34d399; }
+.plan-card.ultra .plan-features li::before { color: #a78bfa; }
+.btn-plan { width: 100%; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; border: none; transition: 0.2s; }
+.plan-card.premium .btn-plan { background: #1e3a8a; color: #60a5fa; border: 1px solid #3b82f6; }
+.plan-card.super .btn-plan { background: #064e3b; color: #34d399; border: 1px solid #10b981; }
+.plan-card.ultra .btn-plan { background: #4c1d95; color: #c4b5fd; border: 1px solid #8b5cf6; }
+
+/* Мобильная версия */
+.mobile-header { display: none; }
+.mobile-bottom-nav { display: none; }
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 90; backdrop-filter: blur(4px); }
+
+@media (max-width: 1024px) {
+  .sidebar-left, .sidebar-right { display: none; }
+  .mobile-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--panel); z-index: 50; }
+  .main-area { height: calc(100dvh - 60px); }
+  .top-bar { display: none; }
+  .welcome-screen { justify-content: flex-start; padding-top: 60px; }
+  .welcome-logo { font-size: 32px; }
+  .welcome-sub { font-size: 14px; }
+  .composer-wrap { position: fixed; bottom: 70px; left: 0; right: 0; padding: 0 16px; max-width: 100%; }
+  .composer { border-radius: 16px; }
+  .mobile-bottom-nav { display: flex; justify-content: space-around; align-items: center; position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: var(--panel); border-top: 1px solid var(--line); z-index: 50; padding-bottom: env(safe-area-inset-bottom); }
+  .mobile-nav-btn { background: none; border: none; color: var(--muted); font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+  .mobile-nav-btn.active { color: var(--blue); }
+  .mobile-nav-btn svg { width: 24px; height: 24px; fill: currentColor; }
+  .mobile-pricing-modal { display: block; position: fixed; bottom: -100%; left: 0; right: 0; height: 85dvh; background: var(--panel); border-top: 1px solid var(--line); border-radius: 24px 24px 0 0; z-index: 100; transition: bottom 0.3s ease; padding: 24px 16px; overflow-y: auto; }
+  .mobile-pricing-modal.open { bottom: 0; }
+  .modal-close { position: absolute; top: 16px; right: 16px; background: var(--panel2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; }
+}
+svg { fill: currentColor; }
+</style>
+</head>
+<body>
+
+<!-- ЭКРАН РЕГИСТРАЦИИ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="brand-logo">A</div>
+    <h2>Добро пожаловать в Apro_ai</h2>
+    <p>Войдите, чтобы получить доступ к ИИ-помощнику и вашей подписке.</p>
+    <button class="google-btn" id="google-login-btn">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G">
+      Войти через Google
+    </button>
+  </div>
+</div>
+
+<!-- ОСНОВНОЙ ИНТЕРФЕЙС -->
+<div id="app-container">
+  <div class="overlay" id="overlay" onclick="togglePricing()"></div>
+  <div class="app">
+    <!-- Левая панель -->
+    <aside class="sidebar-left">
+      <div class="brand"><div class="brand-logo">A</div>Apro_ai <span class="badge-ultra">Ultra</span></div>
+      <nav class="nav-menu">
+        <a class="nav-item active">💬 Чат</a><a class="nav-item">🔍 Поиск</a><a class="nav-item">🖼️ Изображения</a>
+        <a class="nav-item">✨ Генерация</a><a class="nav-item">💻 Код</a><a class="nav-item">📁 Файлы</a><a class="nav-item">⏱️ История</a>
+      </nav>
+      <div class="subscription-card" onclick="togglePricing()">
+        <h4>👑 Apro_ai Ultra <span style="font-size:10px; background:#4c1d95; padding:2px 6px; border-radius:8px;">Активен</span></h4>
+        <p>Максимум возможностей.</p><a href="#">Управление подпиской →</a>
+      </div>
+      <div class="user-profile">
+        <img class="avatar" id="user-avatar" src="" alt="User" style="display:none;">
+        <div class="avatar" id="user-avatar-placeholder">👤</div>
+        <div class="user-info">
+          <div class="name" id="user-name">Загрузка...</div>
+          <div class="status">Пользователь</div>
+        </div>
+        <button class="logout-btn" id="logout-btn" title="Выйти">🚪</button>
+      </div>
+    </aside>
+
+    <!-- Центральная часть -->
+    <main class="main-area">
+      <header class="mobile-header">
+        <div class="brand"><div class="brand-logo">A</div>Apro_ai</div>
+        <button class="icon-btn" onclick="togglePricing()">👑</button>
+      </header>
+      <div class="top-bar">
+        <button class="btn-new-chat">+ Новый чат</button>
+        <div class="top-controls"><button class="lang-select">🌐 RU ⌄</button><button class="icon-btn">☀️</button><button class="icon-btn">☰</button></div>
+      </div>
+      <div class="welcome-screen">
+        <div class="welcome-logo"><div class="brand-logo" style="width:50px; height:50px; font-size:30px;">A</div><span>Apro_ai</span></div>
+        <p class="welcome-sub">Задавай любые вопросы. Я всегда рядом.</p>
+      </div>
+      <div class="composer-wrap">
+        <div class="composer">
+          <textarea rows="1" placeholder="Напиши сообщение Apro_ai..."></textarea>
+          <div class="composer-actions"><button class="icon-btn">📎</button><button class="icon-btn">🖼️</button><button class="send-btn">➤</button></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Правая панель -->
+    <aside class="sidebar-right">
+      <div class="pricing-header"><h2>👑 Подписка Apro_ai</h2><p>Выбери уровень, который подходит именно тебе.</p></div>
+      <div class="plan-card premium"><div class="plan-title"><h3>👑 Premium</h3><div class="plan-price">199 ₽<span>/мес</span></div></div><ul class="plan-features"><li>Лимиты запросов</li><li>Доступ к GPT-4o</li><li>10 фото в день</li><li>Файлы до 50 МБ</li></ul><button class="btn-plan">Выбрать Premium</button></div>
+      <div class="plan-card super"><div class="plan-title"><h3>👑 Super</h3><div class="plan-price">399 ₽<span>/мес</span></div></div><ul class="plan-features"><li>Всё из Premium</li><li>50 фото в день</li><li>Файлы до 200 МБ</li><li>Мощные модели</li></ul><button class="btn-plan">Выбрать Super</button></div>
+      <div class="plan-card ultra"><div class="plan-title"><h3>👑 Ultra</h3><div class="plan-price">799 ₽<span>/мес</span></div></div><ul class="plan-features"><li>Всё из Super</li><li>Безлимит фото</li><li>Файлы до 1 ГБ</li><li>Ранний доступ</li></ul><button class="btn-plan">Выбрать Ultra</button></div>
+    </aside>
+  </div>
+
+  <!-- Мобильная навигация -->
+  <nav class="mobile-bottom-nav">
+    <button class="mobile-nav-btn active"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>Чат</button>
+    <button class="mobile-nav-btn" onclick="togglePricing()"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Тарифы</button>
+    <button class="mobile-nav-btn" id="mobile-logout"><svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>Выйти</button>
+  </nav>
+
+  <!-- Мобильное окно тарифов -->
+  <div class="mobile-pricing-modal" id="mobilePricing">
+    <button class="modal-close" onclick="togglePricing()">✕</button>
+    <div class="pricing-header" style="margin-top: 10px;"><h2>👑 Подписка Apro_ai</h2></div>
+    <div class="plan-card premium"><div class="plan-title"><h3>Premium</h3><div class="plan-price">199 ₽</div></div><button class="btn-plan">Выбрать</button></div>
+    <div class="plan-card super"><div class="plan-title"><h3>Super</h3><div class="plan-price">399 ₽</div></div><button class="btn-plan">Выбрать</button></div>
+    <div class="plan-card ultra"><div class="plan-title"><h3>Ultra</h3><div class="plan-price">799 ₽</div></div><button class="btn-plan">Выбрать</button></div>
+  </div>
+</div>
+
+<!-- ПОДКЛЮЧЕНИЕ FIREBASE (С ТВОИМИ КЛЮЧАМИ) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+  // Твои личные ключи из Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyCZIXNiu3_C2PEQsyQWpjUWU36sgc7TXQ0",
+    authDomain: "apro-ai-2349a.firebaseapp.com",
+    projectId: "apro-ai-2349a",
+    storageBucket: "apro-ai-2349a.firebasestorage.app",
+    messagingSenderId: "588825111599",
+    appId: "1:588825111599:web:3622e62289bfec6010aada"
+  };
+
+  // Инициализация Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  // Элементы интерфейса
+  const loginScreen = document.getElementById('login-screen');
+  const appContainer = document.getElementById('app-container');
+  const loginBtn = document.getElementById('google-login-btn');
+  const logoutBtn = document.getElementById('logout-btn');
+  const mobileLogoutBtn = document.getElementById('mobile-logout');
+
+  // Функция входа
+  loginBtn.addEventListener('click', () => {
+    signInWithPopup(auth, provider).catch((error) => {
+      alert("Ошибка входа: " + error.message);
+    });
+  });
+
+  // Функция выхода
+  const handleLogout = () => signOut(auth);
+  logoutBtn.addEventListener('click', handleLogout);
+  mobileLogoutBtn.addEventListener('click', handleLogout);
+
+  // Следим за состоянием (вошел / не вошел)
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      loginScreen.style.display = 'none';
+      appContainer.style.display = 'block';
+      
+      document.getElementById('user-name').textContent = user.displayName || "Пользователь";
+      
+      if (user.photoURL) {
+        const avatarImg = document.getElementById('user-avatar');
+        avatarImg.src = user.photoURL;
+        avatarImg.style.display = 'block';
+        document.getElementById('user-avatar-placeholder').style.display = 'none';
+      }
+    } else {
+      loginScreen.style.display = 'flex';
+      appContainer.style.display = 'none';
+    }
+  });
+</script>
+
+<!-- ЛОГИКА ИНТЕРФЕЙСА -->
+<script>
+  function togglePricing() {
+    const modal = document.getElementById('mobilePricing');
+    const overlay = document.getElementById('overlay');
+    if (modal.classList.contains('open')) {
+      modal.classList.remove('open');
+      overlay.style.display = 'none';
+    } else {
+      modal.classList.add('open');
+      overlay.style.display = 'block';
+    }
+  }
+  const tx = document.querySelector('textarea');
+  if(tx) {
+    tx.addEventListener("input", function() {
+      this.style.height = "auto";
+      this.style.height = (this.scrollHeight) + "px";
+    });
+  }
+</script>
+</body>
+</html>
